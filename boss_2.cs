@@ -8,7 +8,8 @@ public partial class boss_2 : GroundedEnemy
 	public float DistanceOfDetction = 250.0f;
 	public new bool isAttacking = false;
 	public Vector2 PlayerPos;
-	
+	public bool isMissileLaunched = false;
+	player player;
 		
 	public override void _Ready()
 	{
@@ -20,8 +21,8 @@ public partial class boss_2 : GroundedEnemy
 		_rayCasts[1] = GetNode<RayCast2D>("RayCast2D2_boss2");
 		_sprite = GetNode<AnimatedSprite2D>("AnimatedSprite2D_boss2");
 		Health = 10;
-		PlayerPos.X=0;	
-		PlayerPos.Y=0;
+		PlayerPos.X = 0;	
+		PlayerPos.Y = 0;
 				
 	}
 	public override void _PhysicsProcess(double delta)
@@ -34,25 +35,30 @@ public partial class boss_2 : GroundedEnemy
 			{
 				GD.Print("Boss a droite, Parent: " + GetParent().Name);		
 				
-				
-				var bulletScene = (PackedScene)ResourceLoader.Load("res://Enemies/bullet.tscn");
-				
-				if (bulletScene != null)
+				if (!isMissileLaunched)
 				{
-					GD.Print("chuis dans le milliii");
-					bullet Bullet = (bullet)bulletScene.Instantiate();
-					//bullet.GetNode("RayCast2D").SetCollisionMaskBit(0, false); // Désactiver la collision avec le boss
-					//bullet.Position = this.GlobalPosition;
+					var bulletScene = (PackedScene)ResourceLoader.Load("res://Enemies/bullet.tscn");
 					
-					GetTree().Root.AddChild(Bullet);
-													
-					GD.Print("nom bullet = " + Bullet.Name);
+					if (bulletScene != null)
+					{
+						GD.Print("chuis dans le milliii");
+						bullet Bullet = (bullet)bulletScene.Instantiate();
+						//bullet.GetNode("RayCast2D").SetCollisionMaskBit(0, false); // Désactiver la collision avec le boss
+						//bullet.Position = this.GlobalPosition;
+						
+						GetTree().Root.AddChild(Bullet);
+						isMissileLaunched = true;
+														
+						GD.Print("nom bullet = " + Bullet.Name + ", player.Health = " + player.Health);
+						player.Health -= 8;
+						GD.Print("player.Health = " + player.Health);
+						
+					}
+					else
+					{
+						GD.Print("Erreur: Impossible de charger la scène du missile");
+					}
 				}
-				else
-				{
-					GD.Print("Erreur: Impossible de charger la scène du missile");
-				}
-				
 				
 				
 				//GD.Print(GetParent().GetNode("Bullet").Name);		
